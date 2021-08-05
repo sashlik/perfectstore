@@ -1,4 +1,4 @@
-package ru.hilariousstartups.javaskills.perfectstore.model;
+package ru.hilariousstartups.javaskills.perfectstore.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
