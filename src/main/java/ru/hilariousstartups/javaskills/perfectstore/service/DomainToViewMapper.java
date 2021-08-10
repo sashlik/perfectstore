@@ -24,6 +24,7 @@ public class DomainToViewMapper {
         response.setCurrentTick(worldContext.getCurrentTick().get());
         response.setGameOver(worldContext.isGameOver());
         response.setIncome(worldContext.getTotalIncome());
+        response.setSalaryCosts(worldContext.getSalaryCosts());
         response.setCheckoutLines(worldContext.getCheckoutLines().stream().map(checkoutLineDto -> {
             CheckoutLine checkoutLine = new CheckoutLine();
             checkoutLine.setLineNumber(checkoutLineDto.getLineNumber());

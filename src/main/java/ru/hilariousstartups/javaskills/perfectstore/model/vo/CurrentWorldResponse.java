@@ -18,6 +18,9 @@ public class CurrentWorldResponse {
     @Schema(description = "Текущая прибыль магазина")
     private Integer income;
 
+    @Schema(description = "Расходы на зарплату")
+    private Double salaryCosts;
+
     @Schema(description = "Если true значит игра завершена, и дальнейшие вызовы сервера не нужны")
     private Boolean gameOver;
 

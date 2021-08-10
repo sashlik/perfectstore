@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import ru.hilariousstartups.javaskills.perfectstore.model.CheckoutLineDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDto;
 import ru.hilariousstartups.javaskills.perfectstore.service.EmployeeGenerator;
+import ru.hilariousstartups.javaskills.perfectstore.service.EmployeeService;
+import ru.hilariousstartups.javaskills.perfectstore.service.PerfectStoreService;
 import ru.hilariousstartups.javaskills.perfectstore.service.WorldContext;
 
 import java.util.ArrayList;
@@ -22,11 +24,18 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
 
     private WorldContext worldContext;
     private ExternalConfig externalConfig;
+    private PerfectStoreService perfectStoreService;
+    private EmployeeService employeeService;
 
     @Autowired
-    public AppStartup(WorldContext worldContext, ExternalConfig externalConfig) {
+    public AppStartup(WorldContext worldContext,
+                      ExternalConfig externalConfig,
+                      PerfectStoreService perfectStoreService,
+                      EmployeeService employeeService) {
         this.worldContext = worldContext;
         this.externalConfig = externalConfig;
+        this.perfectStoreService = perfectStoreService;
+        this.employeeService = employeeService;
     }
 
     @Override
@@ -34,8 +43,8 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
         log.info("Initializing store..");
         worldContext.setCurrentTick(new AtomicInteger(0));
         worldContext.setTickCount(externalConfig.getGameDays() * 24 * 60); // tick = 1 minute
-        worldContext.setTickCount(5); // tick = 1 minute
         worldContext.setTotalIncome(0);
+        worldContext.setSalaryCosts(0D);
         initCheckoutLines();
         initEmployees();
 
@@ -94,7 +103,9 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
             employeeDtos.add(emp2);
             worldContext.setEmployees(employeeDtos);
 
-            worldContext.getCheckoutLines().get(i).setEmployeeDto(emp1);
+            CheckoutLineDto checkoutLine = worldContext.getCheckoutLines().get(i);
+
+            employeeService.startWork(emp1, checkoutLine);
         });
     }
 
