@@ -6,15 +6,23 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(description = "Объект описывает текущие менеджерские решения, которые нужно совершить в этом тике. Если никаких решений предпринимать не нужно, передается пустой объект")
+@Schema(description = "Объект описывает текущие менеджерские решения, которые нужно совершить в этом тике. " +
+        "Если никаких решений предпринимать не нужно, передается пустой объект")
 public class CurrentTickRequest {
 
-    // TODO реализовать модель действий менеджмента магазина, которые влияют на происходящее в игре
+    @Schema(description = "Команды на увольнение сотрудников. Увольнение происходит только после отдыха от рабочей смены", required = false)
+    private List<FireEmployeeCommand> fireEmployeeCommands;
 
     @Schema(description = "Команды на найм новых сотрудников", required = false)
     private List<HireEmployeeCommand> hireEmployeeCommands;
 
-    @Schema(description = "Команды на увольнение сотрудников. Увольнение происходит только после отдыха от рабочей смены", required = false)
-    private List<FireEmployeeCommand> fireEmployeeCommands;
+    @Schema(description = "Команды для начала работы сотрудника за кассой", required = false)
+    private List<SetOnCheckoutLineCommand> setOnCheckoutLineCommands;
+
+    @Schema(description = "Команды для снятия сотрудника с кассы", required = false)
+    private List<SetOffCheckoutLineCommand> setOffCheckoutLineCommands;
+
+    @Schema(description = "Команды на закупку товара у поставщика на склад.", required = false)
+    private List<BuyStockCommand> buyStockCommands;
 
 }

@@ -12,7 +12,7 @@ import ru.hilariousstartups.javaskills.perfectstore.service.WorldContext;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest
+//@SpringBootTest
 @Slf4j
 class PerfectStoreApplicationTests {
 
@@ -27,7 +27,7 @@ class PerfectStoreApplicationTests {
 
     private int cnt = 0;
 
-    @Test
+//    @Test
     void contextLoads() {
         CurrentWorldResponse world;
         do {

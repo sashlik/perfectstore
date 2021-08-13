@@ -3,9 +3,7 @@ package ru.hilariousstartups.javaskills.perfectstore.endpoint;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.CurrentTickRequest;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.CurrentWorldResponse;
 import ru.hilariousstartups.javaskills.perfectstore.service.DomainToViewMapper;
@@ -17,27 +15,21 @@ import ru.hilariousstartups.javaskills.perfectstore.service.WorldContext;
 public class PerfectStoreEndpoint {
 
     private PerfectStoreService perfectStoreService;
-    private WorldContext worldContext;
-    private DomainToViewMapper domainToViewMapper;
 
     @Autowired
-    public PerfectStoreEndpoint(WorldContext worldContext,
-                                PerfectStoreService perfectStoreService,
-                                DomainToViewMapper domainToViewMapper) {
-        this.worldContext = worldContext;
+    public PerfectStoreEndpoint(PerfectStoreService perfectStoreService) {
         this.perfectStoreService = perfectStoreService;
-        this.domainToViewMapper = domainToViewMapper;
     }
 
     @Operation(summary = "Получить текущее состояние мира. Игра начинается с первичной загрузки данных о мире.")
     @GetMapping("/loadWorld")
     public CurrentWorldResponse loadWorld() {
-        return domainToViewMapper.currentWorldResponse();
+        return perfectStoreService.currentWorldResponse();
     }
 
     @Operation(summary = "Прожить еще одну минуту. На вход передаются управленческие решения менеджмента магазина (если нужны), проживается еще одна минута и возвращается состояние мира после прожитой минуты")
-    @GetMapping("/tick")
-    public CurrentWorldResponse tick(CurrentTickRequest request) {
+    @PostMapping("/tick")
+    public CurrentWorldResponse tick(@RequestBody CurrentTickRequest request) {
         return perfectStoreService.tick(request);
     }
 

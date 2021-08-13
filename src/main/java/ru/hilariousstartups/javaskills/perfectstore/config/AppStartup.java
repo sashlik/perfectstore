@@ -7,10 +7,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import ru.hilariousstartups.javaskills.perfectstore.model.CheckoutLineDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDto;
-import ru.hilariousstartups.javaskills.perfectstore.service.EmployeeGenerator;
-import ru.hilariousstartups.javaskills.perfectstore.service.EmployeeService;
-import ru.hilariousstartups.javaskills.perfectstore.service.PerfectStoreService;
-import ru.hilariousstartups.javaskills.perfectstore.service.WorldContext;
+import ru.hilariousstartups.javaskills.perfectstore.model.ProductDto;
+import ru.hilariousstartups.javaskills.perfectstore.model.RackCellDto;
+import ru.hilariousstartups.javaskills.perfectstore.service.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,31 +23,36 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
 
     private WorldContext worldContext;
     private ExternalConfig externalConfig;
-    private PerfectStoreService perfectStoreService;
     private EmployeeService employeeService;
+    private EmployeeGenerator employeeGenerator;
+    private StockGenerator stockGenerator;
 
     @Autowired
     public AppStartup(WorldContext worldContext,
                       ExternalConfig externalConfig,
-                      PerfectStoreService perfectStoreService,
-                      EmployeeService employeeService) {
+                      EmployeeService employeeService,
+                      EmployeeGenerator employeeGenerator,
+                      StockGenerator stockGenerator) {
         this.worldContext = worldContext;
         this.externalConfig = externalConfig;
-        this.perfectStoreService = perfectStoreService;
         this.employeeService = employeeService;
+        this.employeeGenerator = employeeGenerator;
+        this.stockGenerator = stockGenerator;
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        log.info("Initializing store..");
+        log.info("Создаем мир..");
         worldContext.setCurrentTick(new AtomicInteger(0));
         worldContext.setTickCount(externalConfig.getGameDays() * 24 * 60); // tick = 1 minute
-        worldContext.setTotalIncome(0);
+        worldContext.setIncome(0);
         worldContext.setSalaryCosts(0D);
+        worldContext.setStockCosts(0D);
         initCheckoutLines();
         initEmployees();
-
-        log.info("Store initialized!");
+        initStock();
+        initRackCells();
+        log.info("Мир создан!");
     }
 
     private void initCheckoutLines() {
@@ -112,12 +116,24 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
     private EmployeeDto generateRandomExperienceEmployee() {
         switch (ThreadLocalRandom.current().nextInt(1,4)) {
             case 1:
-                return EmployeeGenerator.generateJunior();
+                return employeeGenerator.generateJunior();
             case 2:
-                return EmployeeGenerator.generateMiddle();
+                return employeeGenerator.generateMiddle();
             case 3:
             default:
-                return EmployeeGenerator.generateSenior();
+                return employeeGenerator.generateSenior();
         }
     }
+
+    private void initStock() {
+        List<ProductDto> stock = stockGenerator.generateStock();
+        worldContext.setStock(stock);
+    }
+
+    private void initRackCells() {
+        List<RackCellDto> rackCells = stockGenerator.generateRackCells();
+        worldContext.setRackCells(rackCells);
+    }
+
+
 }

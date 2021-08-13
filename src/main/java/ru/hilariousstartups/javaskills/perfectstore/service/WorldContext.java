@@ -4,9 +4,10 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 import ru.hilariousstartups.javaskills.perfectstore.model.CheckoutLineDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDto;
+import ru.hilariousstartups.javaskills.perfectstore.model.ProductDto;
+import ru.hilariousstartups.javaskills.perfectstore.model.RackCellDto;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -18,10 +19,15 @@ public class WorldContext {
 
     private AtomicInteger currentTick;
     private Integer tickCount;
-    private Integer totalIncome;
+    private Integer income;
     private Double salaryCosts;
+    private Double stockCosts;
+
     private List<CheckoutLineDto> checkoutLines; // Кассы
     private List<EmployeeDto> employees; // Сотрудники
+    private List<ProductDto> stock; // Склад товаров
+    private List<RackCellDto> rackCells; // Продуктовые полки
+
 
     public boolean isGameOver() {
         return currentTick.get() == tickCount;
@@ -33,5 +39,9 @@ public class WorldContext {
 
     public EmployeeDto findEmployee(Integer id) {
         return employees.stream().filter(employeeDto -> employeeDto.getId().equals(id)).findFirst().orElse(null);
+    }
+
+    public ProductDto findProduct(Integer id) {
+        return stock.stream().filter(product -> product.getId().equals(id)).findFirst().orElse(null);
     }
 }

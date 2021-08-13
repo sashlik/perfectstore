@@ -3,53 +3,53 @@ package ru.hilariousstartups.javaskills.perfectstore.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.hilariousstartups.javaskills.perfectstore.model.CheckoutLineDto;
-import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.CurrentTickRequest;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.CurrentWorldResponse;
-import ru.hilariousstartups.javaskills.perfectstore.model.vo.Employee;
-import ru.hilariousstartups.javaskills.perfectstore.model.vo.FireEmployeeCommand;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class PerfectStoreService {
 
 
-    private Integer totalIncome = 0;
     private WorldContext worldContext;
     private DomainToViewMapper domainToViewMapper;
     private EmployeeService employeeService;
+    private ProductService productService;
 
     @Autowired
     public PerfectStoreService(WorldContext worldContext,
                                DomainToViewMapper domainToViewMapper,
-                               EmployeeService employeeService) {
+                               EmployeeService employeeService,
+                               ProductService productService) {
         this.worldContext = worldContext;
         this.domainToViewMapper = domainToViewMapper;
         this.employeeService = employeeService;
+        this.productService = productService;
     }
 
     public CurrentWorldResponse tick(CurrentTickRequest request) {
-        // todo реализвать проживание одного хода в магазине (предварительно применив или поставив в очередь менеджерские приказы)
-        employeeService.handleFireEmployeeCommands(request.getFireEmployeeCommands());
-        employeeService.handleHireEmployeeCommands(request.getHireEmployeeCommands());
-        employeeService.calcEmployeeWorkload(request);
 
         if (!worldContext.isGameOver()) {
+
+            employeeService.handleFireEmployeeCommands(request.getFireEmployeeCommands());
+            employeeService.handleOffLineCommands(request.getSetOffCheckoutLineCommands());
+            employeeService.handleHireEmployeeCommands(request.getHireEmployeeCommands());
+            employeeService.handleOnLineCommands(request.getSetOnCheckoutLineCommands());
+            employeeService.calcEmployeeWorkload(request);
+
+            productService.handleBuyStockCommands(request.getBuyStockCommands());
+
             worldContext.getCurrentTick().incrementAndGet();
         }
         else {
-            log.info("Game over! Итого магазин заработал" + worldContext.getTotalIncome());
+            log.info("Game over! Итого магазин заработал" + worldContext.getIncome());
         }
 
-        CurrentWorldResponse response = domainToViewMapper.currentWorldResponse();
-        response.setIncome(totalIncome);
+        return currentWorldResponse();
+    }
 
-
-        return response;
+    public CurrentWorldResponse currentWorldResponse() {
+        return domainToViewMapper.currentWorldResponse();
     }
 
 

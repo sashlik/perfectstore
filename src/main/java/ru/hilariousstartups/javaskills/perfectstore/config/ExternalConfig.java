@@ -13,7 +13,7 @@ public class ExternalConfig {
     private String storeSize; // small, medium, big
 
     @Autowired
-    public ExternalConfig(@Value("${gamedays:7}") Integer gameDays,@Value("${storesize:medium}")  String storeSize) {
+    public ExternalConfig(@Value("${gamedays:7}") Integer gameDays,@Value("${storesize:small}")  String storeSize) {
         this.gameDays = gameDays;
         this.storeSize = storeSize;
     }

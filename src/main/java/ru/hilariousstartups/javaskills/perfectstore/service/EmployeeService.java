@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hilariousstartups.javaskills.perfectstore.model.CheckoutLineDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDto;
-import ru.hilariousstartups.javaskills.perfectstore.model.vo.CurrentTickRequest;
-import ru.hilariousstartups.javaskills.perfectstore.model.vo.FireEmployeeCommand;
-import ru.hilariousstartups.javaskills.perfectstore.model.vo.HireEmployeeCommand;
+import ru.hilariousstartups.javaskills.perfectstore.model.vo.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,10 +18,36 @@ public class EmployeeService {
     public static final int MAX_WORK_TIME = 8 * 60;
 
     private WorldContext worldContext;
+    private EmployeeGenerator employeeGenerator;
 
     @Autowired
-    public EmployeeService(WorldContext worldContext) {
+    public EmployeeService(WorldContext worldContext,
+                           EmployeeGenerator employeeGenerator) {
         this.worldContext = worldContext;
+        this.employeeGenerator = employeeGenerator;
+    }
+
+    public void handleOnLineCommands(List<SetOnCheckoutLineCommand> onLineCommands) {
+        if (onLineCommands != null) {
+            onLineCommands.forEach(command -> {
+                EmployeeDto employee = worldContext.findEmployee(command.getEmployeeId());
+                CheckoutLineDto checkoutLine = worldContext.findCheckoutLine(command.getCheckoutLineId());
+                if (employee != null && checkoutLine != null) {
+                    startWork(employee, checkoutLine);
+                }
+            });
+        }
+    }
+
+    public void handleOffLineCommands(List<SetOffCheckoutLineCommand> offLineCommands) {
+        if (offLineCommands != null) {
+            offLineCommands.forEach(command -> {
+                EmployeeDto employee = worldContext.findEmployee(command.getEmployeeId());
+                if (employee != null) {
+                    stopWork(employee);
+                }
+            });
+        }
     }
 
     public void handleFireEmployeeCommands(List<FireEmployeeCommand> fireEmployeeCommands) {
@@ -31,7 +55,8 @@ public class EmployeeService {
             fireEmployeeCommands.forEach(fec -> {
                 EmployeeDto fireCandidate = worldContext.findEmployee(fec.getEmployeeId());
                 if (fireCandidate != null) {
-                    fireCandidate.setNeedToFire(true); // Помечаем на увольнение. Уволим как только отдохнет положенное. Снимаем с кассы, если он на ней
+                    log.info(fireCandidate.fullName() + " будет уволена как только отдохнет положенное время");
+                    fireCandidate.setNeedToFire(true);
                     stopWork(fireCandidate);
                 }
             });
@@ -45,13 +70,13 @@ public class EmployeeService {
                 switch (hec.getExperience()) {
                     case junior:
                     default:
-                        employee = EmployeeGenerator.generateJunior();
+                        employee = employeeGenerator.generateJunior();
                         break;
                     case middle:
-                        employee = EmployeeGenerator.generateMiddle();
+                        employee = employeeGenerator.generateMiddle();
                         break;
                     case senior:
-                        employee = EmployeeGenerator.generateSenior();
+                        employee = employeeGenerator.generateSenior();
                         break;
                 }
                 worldContext.getEmployees().add(employee);
@@ -104,7 +129,9 @@ public class EmployeeService {
     public void stopWork(EmployeeDto employee) {
 
         employee.setWorkTime(0);
-        employee.setRestTime(1);
+        if (employee.getRestTime() == 0) {
+            employee.setRestTime(1);
+        }
         CheckoutLineDto checkoutLine = employee.getCheckoutLine();
         if (checkoutLine != null) {
             log.info(employee.fullName()
