@@ -44,4 +44,8 @@ public class WorldContext {
     public ProductDto findProduct(Integer id) {
         return stock.stream().filter(product -> product.getId().equals(id)).findFirst().orElse(null);
     }
+
+    public RackCellDto findRackCell(Integer id) {
+        return rackCells.stream().filter(rack -> rack.getId().equals(id)).findFirst().orElse(null);
+    }
 }

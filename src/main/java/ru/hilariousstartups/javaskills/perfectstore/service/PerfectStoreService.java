@@ -38,6 +38,9 @@ public class PerfectStoreService {
             employeeService.calcEmployeeWorkload(request);
 
             productService.handleBuyStockCommands(request.getBuyStockCommands());
+            productService.handlePutOffRackCellCommands(request.getPutOffRackCellCommands());
+            productService.handlePutOnRackCellCommands(request.getPutOnRackCellCommands());
+            productService.handleSetPriceCommands(request.getSetPriceCommands());
 
             worldContext.getCurrentTick().incrementAndGet();
         }

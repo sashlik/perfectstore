@@ -25,4 +25,14 @@ public class CurrentTickRequest {
     @Schema(description = "Команды на закупку товара у поставщика на склад.", required = false)
     private List<BuyStockCommand> buyStockCommands;
 
+    @Schema(description = "Команды на снятие продукта с полки", required = false)
+    private List<PutOffRackCellCommand> putOffRackCellCommands;
+
+    @Schema(description = "Команды на выставление товаров на полки", required = false)
+    private List<PutOnRackCellCommand> putOnRackCellCommands;
+
+    @Schema(description = "Команды установки цен", required = false)
+    private List<SetPriceCommand> setPriceCommands;
+
+
 }
