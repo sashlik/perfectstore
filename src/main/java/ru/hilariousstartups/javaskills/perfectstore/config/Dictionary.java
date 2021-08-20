@@ -1,4 +1,4 @@
-package ru.hilariousstartups.javaskills.perfectstore.service;
+package ru.hilariousstartups.javaskills.perfectstore.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

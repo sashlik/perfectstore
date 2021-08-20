@@ -15,16 +15,19 @@ public class PerfectStoreService {
     private DomainToViewMapper domainToViewMapper;
     private EmployeeService employeeService;
     private ProductService productService;
+    private CustomerService customerService;
 
     @Autowired
     public PerfectStoreService(WorldContext worldContext,
                                DomainToViewMapper domainToViewMapper,
                                EmployeeService employeeService,
-                               ProductService productService) {
+                               ProductService productService,
+                               CustomerService customerService) {
         this.worldContext = worldContext;
         this.domainToViewMapper = domainToViewMapper;
         this.employeeService = employeeService;
         this.productService = productService;
+        this.customerService = customerService;
     }
 
     public CurrentWorldResponse tick(CurrentTickRequest request) {
@@ -41,6 +44,8 @@ public class PerfectStoreService {
             productService.handlePutOffRackCellCommands(request.getPutOffRackCellCommands());
             productService.handlePutOnRackCellCommands(request.getPutOnRackCellCommands());
             productService.handleSetPriceCommands(request.getSetPriceCommands());
+
+            customerService.tick(); //  отработать поведение покупателей в торговом зале и на кассах
 
             worldContext.getCurrentTick().incrementAndGet();
         }

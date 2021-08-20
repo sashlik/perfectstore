@@ -2,10 +2,7 @@ package ru.hilariousstartups.javaskills.perfectstore.service;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;
-import ru.hilariousstartups.javaskills.perfectstore.model.CheckoutLineDto;
-import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDto;
-import ru.hilariousstartups.javaskills.perfectstore.model.ProductDto;
-import ru.hilariousstartups.javaskills.perfectstore.model.RackCellDto;
+import ru.hilariousstartups.javaskills.perfectstore.model.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,6 +24,7 @@ public class WorldContext {
     private List<EmployeeDto> employees; // Сотрудники
     private List<ProductDto> stock; // Склад товаров
     private List<RackCellDto> rackCells; // Продуктовые полки
+    private List<CustomerDto> customers; // покупатели
 
 
     public boolean isGameOver() {

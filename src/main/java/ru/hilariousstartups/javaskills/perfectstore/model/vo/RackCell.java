@@ -24,6 +24,9 @@ public class RackCell {
     @Schema(description = "Id продукта, стоящего на полке (если полка пустая, то не заполняется)", nullable = true)
     private Integer productId;
 
+    @Schema(description = "Название продукта, стоящего на полке (если полка пустая, то не заполняется)", nullable = true)
+    private String productName;
+
     @Schema(description = "Количество продукта, стоящего на полке", nullable = true)
     private Integer productQuantity;
 

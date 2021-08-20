@@ -3,6 +3,7 @@ package ru.hilariousstartups.javaskills.perfectstore.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.hilariousstartups.javaskills.perfectstore.config.Dictionary;
 import ru.hilariousstartups.javaskills.perfectstore.config.ExternalConfig;
 import ru.hilariousstartups.javaskills.perfectstore.model.ProductDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.ProductDict;

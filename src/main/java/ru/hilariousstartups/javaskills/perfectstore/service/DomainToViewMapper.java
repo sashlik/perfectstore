@@ -52,6 +52,7 @@ public class DomainToViewMapper {
             cell.setVisibility(cellDto.getVisibility());
             if (cellDto.getProduct() != null) {
                 cell.setProductId(cellDto.getProduct().getId());
+                cell.setProductName(cellDto.getProduct().getName());
                 cell.setProductQuantity(cellDto.getProduct().getRackCellCount());
             }
             return cell;

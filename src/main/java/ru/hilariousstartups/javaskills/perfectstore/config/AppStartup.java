@@ -9,12 +9,15 @@ import ru.hilariousstartups.javaskills.perfectstore.model.CheckoutLineDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.ProductDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.RackCellDto;
+import ru.hilariousstartups.javaskills.perfectstore.model.vo.PutOnRackCellCommand;
 import ru.hilariousstartups.javaskills.perfectstore.service.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -26,18 +29,24 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
     private EmployeeService employeeService;
     private EmployeeGenerator employeeGenerator;
     private StockGenerator stockGenerator;
+    private CustomerGenerator customerGenerator;
+    private ProductService productService;
 
     @Autowired
     public AppStartup(WorldContext worldContext,
                       ExternalConfig externalConfig,
                       EmployeeService employeeService,
                       EmployeeGenerator employeeGenerator,
-                      StockGenerator stockGenerator) {
+                      StockGenerator stockGenerator,
+                      CustomerGenerator customerGenerator,
+                      ProductService productService) {
         this.worldContext = worldContext;
         this.externalConfig = externalConfig;
         this.employeeService = employeeService;
         this.employeeGenerator = employeeGenerator;
         this.stockGenerator = stockGenerator;
+        this.customerGenerator = customerGenerator;
+        this.productService = productService;
     }
 
     @Override
@@ -52,6 +61,7 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
         initEmployees();
         initStock();
         initRackCells();
+        initCustomers();
         log.info("Мир создан!");
     }
 
@@ -133,6 +143,24 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
     private void initRackCells() {
         List<RackCellDto> rackCells = stockGenerator.generateRackCells();
         worldContext.setRackCells(rackCells);
+        List<ProductDto> productDtos = new ArrayList<>(worldContext.getStock()).stream().filter(p -> p.getInStock() > 0).collect(Collectors.toList());
+        Collections.shuffle(productDtos);
+        List<RackCellDto> shuffled = new ArrayList<>(rackCells);
+        Collections.shuffle(shuffled);
+        AtomicInteger cnt = new AtomicInteger(0);
+        shuffled.stream().takeWhile(rackCell -> shuffled.indexOf(rackCell) < shuffled.size() / 2).forEach(rackCell -> { // fill only half of racks
+            ProductDto product = productDtos.get(cnt.incrementAndGet());
+            PutOnRackCellCommand putOnRackCellCommand = new PutOnRackCellCommand();
+            putOnRackCellCommand.setRackCellId(rackCell.getId());
+            putOnRackCellCommand.setProductId(product.getId());
+            putOnRackCellCommand.setProductQuantity(rackCell.getCapacity());
+            putOnRackCellCommand.setSellPrice(product.getStockPrice() * 1.2);
+            productService.handlePutOnRackCellCommands(List.of(putOnRackCellCommand));
+        });
+    }
+
+    private void initCustomers() {
+        customerGenerator.generateCustomers();
     }
 
 

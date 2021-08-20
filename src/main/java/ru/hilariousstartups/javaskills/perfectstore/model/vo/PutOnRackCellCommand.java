@@ -1,7 +1,9 @@
 package ru.hilariousstartups.javaskills.perfectstore.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Schema(description = "Команда выставить товар на полку. Товар можно выставить либо на пустую полку, либо на ту, на которой уже стоит данный товар.")

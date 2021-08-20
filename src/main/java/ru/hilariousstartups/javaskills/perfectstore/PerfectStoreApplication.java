@@ -3,7 +3,7 @@ package ru.hilariousstartups.javaskills.perfectstore;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import ru.hilariousstartups.javaskills.perfectstore.service.Dictionary;
+import ru.hilariousstartups.javaskills.perfectstore.config.Dictionary;
 
 @SpringBootApplication
 @EnableConfigurationProperties(Dictionary.class)
