@@ -155,3 +155,6 @@ dict:
     - Осипова
     - Терешкова
     - Гусева
+spring:
+  banner:
+    location: banner.txt
