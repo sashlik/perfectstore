@@ -33,6 +33,9 @@ public class CurrentWorldResponse {
     @Schema(description = "Сотрудники", nullable = false)
     private List<Employee> employees;
 
+    @Schema(description = "Кадровое агенство. Справочная информация о том, каких сотрудников можно нанять и по какой ставке", nullable = false)
+    private List<EmployeeRecruitmentOffer> recruitmentAgency;
+
     @Schema(description = "Склад с товарами", nullable = false)
     private List<Product> stock;
 

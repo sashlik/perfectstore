@@ -31,6 +31,10 @@ public class StockGenerator {
         this.externalConfig = externalConfig;
     }
 
+    public List<ProductDto> generateEmptyStock() {
+        return dictionary.getStock().stream().map(productDict -> dictToProduct(productDict, 0)).collect(Collectors.toList());
+    }
+
     public List<ProductDto> generateStock() {
         List<ProductDto> stock = new ArrayList<>(dictionary.getStock().size());
         List<ProductDict> shuffled = new ArrayList<>(dictionary.getStock());
@@ -68,19 +72,7 @@ public class StockGenerator {
     }
 
     public List<RackCellDto> generateRackCells() {
-        int rackCellPerVisibility;
-        switch (externalConfig.getStoreSize()) {
-            case "small":
-            default:
-                rackCellPerVisibility = 3;
-                break;
-            case "medium":
-                rackCellPerVisibility = 5;
-                break;
-            case "big":
-                rackCellPerVisibility = 9;
-                break;
-        }
+        int rackCellPerVisibility = dictionary.getStore().get(externalConfig.getStoreSize()).getRackCellPerVisibility();
 
         AtomicInteger idCnt = new AtomicInteger(0);
         List<RackCellDto> rackCells = new ArrayList<>();

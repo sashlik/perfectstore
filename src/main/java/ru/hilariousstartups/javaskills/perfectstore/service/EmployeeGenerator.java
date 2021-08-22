@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.hilariousstartups.javaskills.perfectstore.config.Dictionary;
 import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDto;
+import ru.hilariousstartups.javaskills.perfectstore.model.vo.EmployeeExperience;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Component
 public class EmployeeGenerator {
@@ -19,24 +22,10 @@ public class EmployeeGenerator {
         this.dictionary = dictionary;
     }
 
-    public EmployeeDto generateJunior() {
+    public EmployeeDto generate(EmployeeExperience experience) {
         EmployeeDto employeeDto = preGen();
-        employeeDto.setExperience(ThreadLocalRandom.current().nextInt(10, 30));
-        employeeDto.setSalary(150);
-        return employeeDto;
-    }
-
-    public EmployeeDto generateMiddle() {
-        EmployeeDto employeeDto = preGen();
-        employeeDto.setExperience(ThreadLocalRandom.current().nextInt(30, 70));
-        employeeDto.setSalary(270);
-        return employeeDto;
-    }
-
-    public EmployeeDto generateSenior() {
-        EmployeeDto employeeDto = preGen();
-        employeeDto.setExperience(ThreadLocalRandom.current().nextInt(70, 100));
-        employeeDto.setSalary(420);
+        employeeDto.setExperience(ThreadLocalRandom.current().nextInt(getExpFrom(experience), getExpTo(experience)));
+        employeeDto.setSalary(dictionary.getEmployee().get(experience).getSalary());
         return employeeDto;
     }
 
@@ -54,6 +43,18 @@ public class EmployeeGenerator {
 
     private String generateLastName() {
         return dictionary.getLastNames().get(ThreadLocalRandom.current().nextInt(dictionary.getLastNames().size()));
+    }
+
+    private Integer getExpFrom(EmployeeExperience experience) {
+        return getExp(experience)[0];
+    }
+
+    private Integer getExpTo(EmployeeExperience experience) {
+        return getExp(experience)[1];
+    }
+
+    private Integer[] getExp(EmployeeExperience experience) {
+        return Arrays.stream(dictionary.getEmployee().get(experience).getExperience().split("-")).map(Integer::valueOf).collect(Collectors.toList()).toArray(Integer[]::new);
     }
 
 }

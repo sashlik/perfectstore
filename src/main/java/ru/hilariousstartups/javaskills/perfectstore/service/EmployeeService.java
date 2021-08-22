@@ -66,19 +66,7 @@ public class EmployeeService {
     public void handleHireEmployeeCommands(List<HireEmployeeCommand> hireEmployeeCommands) {
         if (hireEmployeeCommands != null) {
             hireEmployeeCommands.forEach(hec -> {
-                EmployeeDto employee;
-                switch (hec.getExperience()) {
-                    case junior:
-                    default:
-                        employee = employeeGenerator.generateJunior();
-                        break;
-                    case middle:
-                        employee = employeeGenerator.generateMiddle();
-                        break;
-                    case senior:
-                        employee = employeeGenerator.generateSenior();
-                        break;
-                }
+                EmployeeDto employee = employeeGenerator.generate(hec.getExperience());
                 worldContext.getEmployees().add(employee);
 
                 if (hec.getCheckoutLineId() != null) {

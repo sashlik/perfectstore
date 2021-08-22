@@ -9,6 +9,7 @@ import ru.hilariousstartups.javaskills.perfectstore.model.CheckoutLineDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.ProductDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.RackCellDto;
+import ru.hilariousstartups.javaskills.perfectstore.model.vo.EmployeeExperience;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.PutOnRackCellCommand;
 import ru.hilariousstartups.javaskills.perfectstore.service.*;
 
@@ -31,6 +32,7 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
     private StockGenerator stockGenerator;
     private CustomerGenerator customerGenerator;
     private ProductService productService;
+    private Dictionary dictionary;
 
     @Autowired
     public AppStartup(WorldContext worldContext,
@@ -39,7 +41,8 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
                       EmployeeGenerator employeeGenerator,
                       StockGenerator stockGenerator,
                       CustomerGenerator customerGenerator,
-                      ProductService productService) {
+                      ProductService productService,
+                      Dictionary dictionary) {
         this.worldContext = worldContext;
         this.externalConfig = externalConfig;
         this.employeeService = employeeService;
@@ -47,6 +50,7 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
         this.stockGenerator = stockGenerator;
         this.customerGenerator = customerGenerator;
         this.productService = productService;
+        this.dictionary = dictionary;
     }
 
     @Override
@@ -58,28 +62,23 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
         worldContext.setSalaryCosts(0D);
         worldContext.setStockCosts(0D);
         initCheckoutLines();
-        initEmployees();
-        initStock();
         initRackCells();
         initCustomers();
+
+        if (externalConfig.getPregenerate()) {
+            initEmployees();
+            initStock();
+            putOnRackCells();
+        }
+        else {
+            initEmptyStock();
+        }
+
         log.info("Мир создан!");
     }
 
     private void initCheckoutLines() {
-        Integer checkoutLines;
-
-        switch (externalConfig.getStoreSize()) {
-            case "small":
-            default:
-                checkoutLines = 2;
-                break;
-            case "medium":
-                checkoutLines = 8;
-                break;
-            case "big":
-                checkoutLines = 16;
-                break;
-        }
+        Integer checkoutLines = dictionary.getStore().get(externalConfig.getStoreSize()).getCheckoutLines();
 
         List<CheckoutLineDto> lines = new ArrayList<>();
         IntStream.range(0, checkoutLines).forEach((i) -> {
@@ -93,20 +92,7 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
         // Для маленького магазина все кассы заполняем. Для среднего и большого только часть (в ашанах все кассы не заполнены обычно).
         // Опытность кассиров генерим случайно
 
-        Integer workingCheckoutLines;
-
-        switch (externalConfig.getStoreSize()) {
-            case "small":
-            default:
-                workingCheckoutLines = 2;
-                break;
-            case "medium":
-                workingCheckoutLines = 5;
-                break;
-            case "big":
-                workingCheckoutLines = 11;
-                break;
-        }
+        Integer workingCheckoutLines = dictionary.getStore().get(externalConfig.getStoreSize()).getWorkingCheckoutLines();
 
         List<EmployeeDto> employeeDtos = new ArrayList<>();
         IntStream.range(0, workingCheckoutLines).forEach((i) -> {
@@ -126,26 +112,41 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
     private EmployeeDto generateRandomExperienceEmployee() {
         switch (ThreadLocalRandom.current().nextInt(1,4)) {
             case 1:
-                return employeeGenerator.generateJunior();
+                return employeeGenerator.generate(EmployeeExperience.junior);
             case 2:
-                return employeeGenerator.generateMiddle();
+                return employeeGenerator.generate(EmployeeExperience.middle);
             case 3:
             default:
-                return employeeGenerator.generateSenior();
+                return employeeGenerator.generate(EmployeeExperience.senior);
         }
+    }
+
+    private void initEmptyStock() {
+        worldContext.setStockCosts(0D);
+        worldContext.setStock(stockGenerator.generateEmptyStock());
     }
 
     private void initStock() {
         List<ProductDto> stock = stockGenerator.generateStock();
+        Double stockCosts = 0D;
+        for (ProductDto product : stock) {
+            stockCosts += product.getInStock() * product.getStockPrice();
+        }
+
         worldContext.setStock(stock);
+        worldContext.setStockCosts(stockCosts);
     }
 
     private void initRackCells() {
         List<RackCellDto> rackCells = stockGenerator.generateRackCells();
         worldContext.setRackCells(rackCells);
+
+    }
+
+    private void putOnRackCells() {
         List<ProductDto> productDtos = new ArrayList<>(worldContext.getStock()).stream().filter(p -> p.getInStock() > 0).collect(Collectors.toList());
         Collections.shuffle(productDtos);
-        List<RackCellDto> shuffled = new ArrayList<>(rackCells);
+        List<RackCellDto> shuffled = new ArrayList<>(worldContext.getRackCells());
         Collections.shuffle(shuffled);
         AtomicInteger cnt = new AtomicInteger(0);
         shuffled.stream().takeWhile(rackCell -> shuffled.indexOf(rackCell) < shuffled.size() / 2).forEach(rackCell -> { // fill only half of racks
@@ -154,7 +155,8 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
             putOnRackCellCommand.setRackCellId(rackCell.getId());
             putOnRackCellCommand.setProductId(product.getId());
             putOnRackCellCommand.setProductQuantity(rackCell.getCapacity());
-            putOnRackCellCommand.setSellPrice(product.getStockPrice() * 1.2);
+            Double price = (double) Math.round(product.getStockPrice() * 1.2 * 100) / 100;
+            putOnRackCellCommand.setSellPrice(price);
             productService.handlePutOnRackCellCommands(List.of(putOnRackCellCommand));
         });
     }
