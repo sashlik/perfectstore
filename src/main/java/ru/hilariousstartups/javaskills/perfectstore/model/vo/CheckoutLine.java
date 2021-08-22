@@ -21,4 +21,7 @@ public class CheckoutLine {
     @Schema(description = "Сотрудник, работающий в данный момент за этой кассой. Если касса закрыта, то незаполнено", nullable = true)
     private Integer employeeId;
 
+    @Schema(description = "Сотрудник, оплачивающий товар на этой кассе", nullable = true)
+    private Integer customerId;
+
 }

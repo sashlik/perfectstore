@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.CurrentTickRequest;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.CurrentWorldResponse;
+import ru.hilariousstartups.javaskills.perfectstore.utils.MoneyUtils;
 
 @Service
 @Slf4j
@@ -49,9 +50,17 @@ public class PerfectStoreService {
 
             worldContext.getCurrentTick().incrementAndGet();
         }
-        else {
-            log.info("Game over! Итого магазин заработал" + worldContext.getIncome());
+
+        if (worldContext.isGameOver()) {
+
+            Double income = MoneyUtils.round(worldContext.getIncome());
+            Double stockCosts = MoneyUtils.round(worldContext.getStockCosts());
+            Double salaryCosts = MoneyUtils.round(worldContext.getSalaryCosts());
+
+            double total = MoneyUtils.round(income - stockCosts - salaryCosts);
+            log.info("\nGame over! \nВыручка: " + income + "руб.\nРасходы на закупку товаров: " + stockCosts + " руб.\nРасходы на персонал: " + salaryCosts + "руб. \n\nИтого магазин заработал: " + total + "руб.");
         }
+
 
         return currentWorldResponse();
     }

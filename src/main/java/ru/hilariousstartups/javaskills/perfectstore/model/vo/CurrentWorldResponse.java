@@ -16,7 +16,7 @@ public class CurrentWorldResponse {
     private Integer currentTick;
 
     @Schema(description = "Текущая прибыль магазина", nullable = false)
-    private Integer income;
+    private Double income;
 
     @Schema(description = "Расходы на зарплату", nullable = false)
     private Double salaryCosts;
@@ -41,5 +41,8 @@ public class CurrentWorldResponse {
 
     @Schema(description = "Продуктовые полки", nullable = false)
     private List<RackCell> rackCells;
+
+    @Schema(description = "Покупатели", nullable = true)
+    private List<Customer> customers;
 
 }

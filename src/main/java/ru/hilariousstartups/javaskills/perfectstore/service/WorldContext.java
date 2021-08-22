@@ -4,7 +4,9 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 import ru.hilariousstartups.javaskills.perfectstore.model.*;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -16,7 +18,7 @@ public class WorldContext {
 
     private AtomicInteger currentTick;
     private Integer tickCount;
-    private Integer income;
+    private Double income;
     private Double salaryCosts;
     private Double stockCosts;
 
@@ -25,6 +27,9 @@ public class WorldContext {
     private List<ProductDto> stock; // Склад товаров
     private List<RackCellDto> rackCells; // Продуктовые полки
     private List<CustomerDto> customers; // покупатели
+
+    private Queue<CustomerDto> checkoutQueue = new LinkedList<>(); // Очередь на кассы
+
 
 
     public boolean isGameOver() {

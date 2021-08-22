@@ -23,13 +23,13 @@ public class CustomerGenerator {
         this.worldContext = worldContext;
     }
 
-    public void generateCustomers() { // TODO
+    public void generateCustomers() { // TODO implement
         if (worldContext.getCustomers() == null) {
             worldContext.setCustomers(new ArrayList<>());
 
             List<CustomerDto> customers = worldContext.getCustomers();
 
-            IntStream.range(1, 10).forEach(i -> {
+            IntStream.range(1, 3).forEach(i -> {
                 CustomerDto customer = new CustomerDto();
                 customer.setId(idCounter.incrementAndGet());
                 customer.setMode(CustomerMode.in_hall);

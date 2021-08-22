@@ -12,6 +12,7 @@ import ru.hilariousstartups.javaskills.perfectstore.model.RackCellDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.EmployeeExperience;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.PutOnRackCellCommand;
 import ru.hilariousstartups.javaskills.perfectstore.service.*;
+import ru.hilariousstartups.javaskills.perfectstore.utils.MoneyUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +59,7 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
         log.info("Создаем мир..");
         worldContext.setCurrentTick(new AtomicInteger(0));
         worldContext.setTickCount(externalConfig.getGameDays() * 24 * 60); // tick = 1 minute
-        worldContext.setIncome(0);
+        worldContext.setIncome(0d);
         worldContext.setSalaryCosts(0D);
         worldContext.setStockCosts(0D);
         initCheckoutLines();
@@ -155,7 +156,7 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
             putOnRackCellCommand.setRackCellId(rackCell.getId());
             putOnRackCellCommand.setProductId(product.getId());
             putOnRackCellCommand.setProductQuantity(rackCell.getCapacity());
-            Double price = (double) Math.round(product.getStockPrice() * 1.2 * 100) / 100;
+            Double price = MoneyUtils.round(product.getStockPrice() * 1.2);
             putOnRackCellCommand.setSellPrice(price);
             productService.handlePutOnRackCellCommands(List.of(putOnRackCellCommand));
         });

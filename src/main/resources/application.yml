@@ -2,7 +2,7 @@ dict:
   store:
     small:
       checkoutLines: 2
-      workingCheckoutLines: 2
+      workingCheckoutLines: 1
       rackCellPerVisibility: 3
     medium:
       checkoutLines: 8

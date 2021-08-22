@@ -17,5 +17,14 @@ public class CustomerDto {
     private Iterator<RackCellDto> rackCellDtoIterator;
     private RackCellDto currentRackCell;
     private CheckoutLineDto checkoutLine;
+    private Integer finishCheckoutTick; // Calculated time when employee will finish to serve customer (based on employee experience and customer basket size)
+
+    public String prettyPrintBasket() {
+        StringBuilder sb = new StringBuilder();
+        for (ProductInBasketDto product : basket) {
+            sb.append(product.getProduct().getName()).append(" ").append(product.getProductCount()).append("шт по ").append(product.getPrice()).append("руб; ");
+        }
+        return sb.toString();
+    }
 
 }

@@ -27,71 +27,41 @@ class PerfectStoreApplicationTests {
 
     private int cnt = 0;
 
-//    @Test
+  //  @Test
     void contextLoads() {
         CurrentWorldResponse world;
         do {
              world = endpoint.tick(new CurrentTickRequest());
-             if (world.getCurrentTick() % 100 == 0) {
-                 log.info("Текущие затраты:" + world.getSalaryCosts());
-             }
-
-            if (cnt++ == 300) {
-                List<HireEmployeeCommand> hireEmployeeCommands = new ArrayList<>();
-                HireEmployeeCommand hireCmd = new HireEmployeeCommand();
-                hireCmd.setCheckoutLineId(5);
-                hireCmd.setExperience(EmployeeExperience.senior);
-
-                hireEmployeeCommands.add(hireCmd);
+            /*if (world.getCurrentTick() == 10) {
+                System.out.println("Снимаем с кассы!");
+                SetOffCheckoutLineCommand setOffCheckoutLineCommand = new SetOffCheckoutLineCommand();
+                setOffCheckoutLineCommand.setEmployeeId(1);
                 CurrentTickRequest request = new CurrentTickRequest();
-                request.setHireEmployeeCommands(hireEmployeeCommands);
+                request.setSetOffCheckoutLineCommands(List.of(setOffCheckoutLineCommand));
+                endpoint.tick(request);
+            }*/
+            if (world.getCurrentTick() == 10) {
+                System.out.println("Снимаем с кассы!");
+                FireEmployeeCommand command = new FireEmployeeCommand();
+                command.setEmployeeId(1);
+                CurrentTickRequest request = new CurrentTickRequest();
+                request.setFireEmployeeCommands(List.of(command));
                 endpoint.tick(request);
             }
-
-            /* if (cnt++ == 300) {
-                 List<FireEmployeeCommand> fireEmployeeCommands = new ArrayList<>();
-                 FireEmployeeCommand fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(1);
-                 fireEmployeeCommands.add(fireCmd);
-
-                 fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(2);
-                 fireEmployeeCommands.add(fireCmd);
-
-                 fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(3);
-                 fireEmployeeCommands.add(fireCmd);
-
-                 fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(4);
-                 fireEmployeeCommands.add(fireCmd);
-
-                 fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(5);
-                 fireEmployeeCommands.add(fireCmd);
-fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(6);
-                 fireEmployeeCommands.add(fireCmd);
-fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(7);
-                 fireEmployeeCommands.add(fireCmd);
-fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(8);
-                 fireEmployeeCommands.add(fireCmd);
-fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(9);
-                 fireEmployeeCommands.add(fireCmd);
-fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(10);
-                 fireEmployeeCommands.add(fireCmd);
-fireCmd = new FireEmployeeCommand();
-                 fireCmd.setEmployeeId(11);
-                 fireEmployeeCommands.add(fireCmd);
-
-                 CurrentTickRequest request = new CurrentTickRequest();
-                 request.setFireEmployeeCommands(fireEmployeeCommands);
-                 endpoint.tick(request);
+            if (world.getCurrentTick() == 1500) {
+                SetOnCheckoutLineCommand command = new SetOnCheckoutLineCommand();
+                command.setEmployeeId(1);
+                command.setCheckoutLineId(2);
+                CurrentTickRequest request = new CurrentTickRequest();
+                request.setSetOnCheckoutLineCommands(List.of(command));
+                endpoint.tick(request);
+            }
+            //if (world.getCurrentTick())
+           /*  if (world.getCurrentTick() % 100 == 0) {
+                 log.info("Текущие затраты:" + world.getSalaryCosts());
              }*/
+
+
         }
         while (!world.getGameOver());
 

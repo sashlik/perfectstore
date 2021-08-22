@@ -17,6 +17,7 @@ public class EmployeeDto {
     private CheckoutLineDto checkoutLine;
     private boolean needToFire; // Сотрудник помечен на увольнение и должен быть уволен как только отдохнет после смены
                                 // (это сделано для того чтоб вместо оплачиваемого отдыха не увольняли и не нанимали нового)
+    private boolean needsOffLine; // Сотрудник либо отработал смену либо был помечен на снятие с кассы.
 
     private Integer workTime = 0;
     private Integer restTime = EmployeeService.REST_TIME; // Создаем новых кассиров уже "отдохнувшими"

@@ -16,7 +16,7 @@ public class ExternalConfig {
     @Autowired
     public ExternalConfig(@Value("${gamedays:7}") Integer gameDays,
                           @Value("${storesize:small}")  String storeSize,
-                          @Value("${pregenerate:false}") Boolean pregenerate) {
+                          @Value("${pregenerate:true}") Boolean pregenerate) {
         this.gameDays = gameDays;
         this.pregenerate = pregenerate;
         this.storeSize = storeSize;

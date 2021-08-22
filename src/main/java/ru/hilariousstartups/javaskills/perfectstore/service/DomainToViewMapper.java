@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hilariousstartups.javaskills.perfectstore.config.Dictionary;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.*;
+import ru.hilariousstartups.javaskills.perfectstore.utils.MoneyUtils;
 
 import java.util.stream.Collectors;
 
@@ -24,9 +25,9 @@ public class DomainToViewMapper {
         response.setTickCount(worldContext.getTickCount());
         response.setCurrentTick(worldContext.getCurrentTick().get());
         response.setGameOver(worldContext.isGameOver());
-        response.setIncome(worldContext.getIncome());
-        response.setSalaryCosts(worldContext.getSalaryCosts());
-        response.setStockCosts(worldContext.getStockCosts());
+        response.setIncome(MoneyUtils.round(worldContext.getIncome()));
+        response.setSalaryCosts(MoneyUtils.round(worldContext.getSalaryCosts()));
+        response.setStockCosts(MoneyUtils.round(worldContext.getStockCosts()));
 
         response.setRecruitmentAgency(dictionary.getEmployee().entrySet().stream()
                 .map(entry -> new EmployeeRecruitmentOffer(entry.getKey().name(),
@@ -38,6 +39,7 @@ public class DomainToViewMapper {
             CheckoutLine checkoutLine = new CheckoutLine();
             checkoutLine.setLineNumber(checkoutLineDto.getLineNumber());
             checkoutLine.setEmployeeId(checkoutLineDto.getEmployeeDto() != null ? checkoutLineDto.getEmployeeDto().getId() : null);
+            checkoutLine.setCustomerId(checkoutLineDto.getCustomer() != null ?checkoutLineDto.getCustomer().getId() : null);
             return checkoutLine;
         }).collect(Collectors.toList()));
 
@@ -69,6 +71,25 @@ public class DomainToViewMapper {
             }
             return cell;
         }).collect(Collectors.toList()));
+
+        if (worldContext.getCustomers() != null) {
+            response.setCustomers(worldContext.getCustomers().stream().map(customerDto -> {
+                Customer customer = new Customer();
+                customer.setId(customerDto.getId());
+                customer.setMode(customerDto.getMode());
+                if (customerDto.getBasket() != null) {
+                    customer.setBasket(customerDto.getBasket().stream().map(pibDto -> {
+                        ProductInBasket pib = new ProductInBasket();
+                        pib.setId(pibDto.getProduct().getId());
+                        pib.setProductName(pibDto.getProduct().getName());
+                        pib.setPriсe(pibDto.getPrice());
+                        pib.setProductCount(pibDto.getProductCount());
+                        return pib;
+                    }).collect(Collectors.toList()));
+                }
+                return customer;
+            }).collect(Collectors.toList()));
+        }
 
         return response;
     }

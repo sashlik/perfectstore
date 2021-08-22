@@ -44,7 +44,7 @@ public class EmployeeService {
             offLineCommands.forEach(command -> {
                 EmployeeDto employee = worldContext.findEmployee(command.getEmployeeId());
                 if (employee != null) {
-                    stopWork(employee);
+                    markToStopWork(employee);
                 }
             });
         }
@@ -57,7 +57,7 @@ public class EmployeeService {
                 if (fireCandidate != null) {
                     log.info(fireCandidate.fullName() + " будет уволена как только отдохнет положенное время");
                     fireCandidate.setNeedToFire(true);
-                    stopWork(fireCandidate);
+                    markToStopWork(fireCandidate);
                 }
             });
         }
@@ -80,15 +80,22 @@ public class EmployeeService {
     }
 
     public void calcEmployeeWorkload(CurrentTickRequest request) {
-
+        if (worldContext.getEmployees() == null) {
+            return;
+        }
         worldContext.getEmployees().forEach(employee -> {
             if (employee.getCheckoutLine() == null) {
-                // Сотрудник не работает. Увеличиваем время, проведенное им в режиме отдыха
+                // Сотрудник не работает. Увеличиваем время, проведенное им в режиме отдыха и сбрасываем флажок
+                employee.setNeedsOffLine(false);
                 increaseRestTime(employee);
             }
             else {
-                if (employee.getWorkTime() >= MAX_WORK_TIME) {
+                if (employee.getWorkTime() >= MAX_WORK_TIME && employee.getCheckoutLine().getCustomer() == null) { // 479 tick
                     // Сотрудник отработал смену, снимаем его с кассы
+                    stopWork(employee);
+                }
+                else if (employee.isNeedsOffLine() && employee.getCheckoutLine().getCustomer() == null) {
+                    // Сотрудника пометили на снятие с линии. Он отпустил покупателя, можно снимать
                     stopWork(employee);
                 }
                 else {
@@ -103,7 +110,7 @@ public class EmployeeService {
         List<EmployeeDto> toFire = worldContext.getEmployees().stream()
                 .filter(employee -> employee.isNeedToFire() && employee.getRestTime() >= REST_TIME).collect(Collectors.toList());
         worldContext.getEmployees().removeAll(toFire);
-        toFire.forEach(employee ->  log.info(employee.fullName() + " уволена."));
+        toFire.forEach(employee ->  log.info(worldContext.getCurrentTick().get() + " тик:" + employee.fullName() + " уволена."));
     }
 
     public void increaseWorkTime(EmployeeDto employee) {
@@ -114,6 +121,10 @@ public class EmployeeService {
         employee.setRestTime(employee.getRestTime() + 1);
     }
 
+    public void markToStopWork(EmployeeDto employee) {
+        employee.setNeedsOffLine(true);
+    }
+
     public void stopWork(EmployeeDto employee) {
 
         employee.setWorkTime(0);
@@ -122,7 +133,7 @@ public class EmployeeService {
         }
         CheckoutLineDto checkoutLine = employee.getCheckoutLine();
         if (checkoutLine != null) {
-            log.info(employee.fullName()
+            log.info(worldContext.getCurrentTick() + " тик: " + employee.fullName()
                     + " отработала смену и освободила кассу " + employee.getCheckoutLine().getLineNumber());
             checkoutLine.setEmployeeDto(null);
 
