@@ -27,6 +27,8 @@ public class PerfectStoreService {
     private CustomerService customerService;
     private ExternalConfig externalConfig;
 
+    private Integer cnt = 0;
+
     @Autowired
     public PerfectStoreService(WorldContext worldContext,
                                DomainToViewMapper domainToViewMapper,
@@ -79,6 +81,11 @@ public class PerfectStoreService {
                 log.error(e.getMessage(), e);
             }
             log.debug(logText);
+        }
+
+        cnt+=1;
+        if (cnt % 120 == 0) {
+            log.info("Пройден " + cnt + " тик");
         }
 
 
