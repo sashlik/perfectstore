@@ -125,7 +125,11 @@ public class CustomerService {
     }
 
     private void calcCheckoutTime(CustomerDto customer) {
-        customer.setFinishCheckoutTick(worldContext.getCurrentTick().get() + 5); // todo implement
+        EmployeeDto employeeDto = customer.getCheckoutLine().getEmployeeDto();
+        int basketSize = customer.getBasket().size();
+        Integer experience = employeeDto.getExperience();
+        Integer tickCount =  (int) Math.round(basketSize / (experience * 0.06)); // 6% of product per 1% of exp
+        customer.setFinishCheckoutTick(worldContext.getCurrentTick().get() + tickCount);
     }
 
     private void processHall(CustomerDto customer, List<CustomerDto> leavingCustomers) {
