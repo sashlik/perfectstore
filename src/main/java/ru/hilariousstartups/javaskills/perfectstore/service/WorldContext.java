@@ -24,7 +24,7 @@ public class WorldContext {
     private Double stockCosts;
 
     private List<CheckoutLineDto> checkoutLines; // Кассы
-    private List<EmployeeDto> employees; // Сотрудники
+    private List<EmployeeDto> employees = new ArrayList<>(); // Сотрудники
     private List<ProductDto> stock; // Склад товаров
     private List<RackCellDto> rackCells; // Продуктовые полки
     private List<CustomerDto> customers = new ArrayList<>(); // покупатели

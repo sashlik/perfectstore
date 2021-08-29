@@ -18,8 +18,8 @@ public class ExternalConfig {
     @Autowired
     public ExternalConfig(@Value("${gamedays:7}") Integer gameDays,
                           @Value("${storesize:small}")  String storeSize,
-                          @Value("${pregenerate:true}") Boolean pregenerate,
-                          @Value("${hype:5}") Integer hypeLevel,
+                          @Value("${pregenerate:false}") Boolean pregenerate,
+                          @Value("${hype:3}") Integer hypeLevel,
                           @Value("${RESULT_LOCATION:/Users/Guest/Public/}") String resultPath) {
         this.gameDays = gameDays;
         this.pregenerate = pregenerate;
