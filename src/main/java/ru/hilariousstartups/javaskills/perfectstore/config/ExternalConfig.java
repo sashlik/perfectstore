@@ -17,7 +17,7 @@ public class ExternalConfig {
 
     @Autowired
     public ExternalConfig(@Value("${gamedays:7}") Integer gameDays,
-                          @Value("${storesize:small}")  String storeSize,
+                          @Value("${storesize:large}")  String storeSize,
                           @Value("${pregenerate:false}") Boolean pregenerate,
                           @Value("${hype:3}") Integer hypeLevel,
                           @Value("${RESULT_LOCATION:/Users/Guest/Public/}") String resultPath) {

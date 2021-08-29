@@ -47,6 +47,9 @@ public class CustomerService {
 
 
     private void newCustomersEnter() {
+        if (worldContext.getCurrentTick().get() % 120 == 0) {
+            System.out.println(traffic(worldContext.getCurrentTick().get()) + " " + worldContext.getCheckoutQueue().size());
+        }
         Integer desiredCount = worldContext.getDesiredCustomersCount();
         int currentCount = worldContext.getCustomers().size();
         if (desiredCount == null || currentCount <= desiredCount) {
@@ -55,7 +58,8 @@ public class CustomerService {
         }
 
         if (currentCount < desiredCount) {
-            int newCustomers = Math.min(desiredCount - currentCount, dictionary.getCustomer().getEntranceCapacity());
+            StoreDict storeDict = dictionary.getStore().get(externalConfig.getStoreSize());
+            int newCustomers = Math.min(desiredCount - currentCount, storeDict.getEntranceCapacity());
             customerGenerator.generateCustomers(newCustomers);
         }
 
@@ -63,21 +67,21 @@ public class CustomerService {
     }
 
     private Integer generateDesired() {
-
+        StoreDict storeDict = dictionary.getStore().get(externalConfig.getStoreSize());
         int minBorder, maxBorder;
         TrafficMode traffic = traffic(worldContext.getCurrentTick().get());
         switch (traffic) {
             case high:
-                minBorder = (int) Math.round(dictionary.getCustomer().getMaxCustomers() / 1.2);
-                maxBorder = dictionary.getCustomer().getMaxCustomers();
+                minBorder = (int) Math.round(storeDict.getMaxCustomers() / 1.2);
+                maxBorder = storeDict.getMaxCustomers();
                 break;
             case low:
-                minBorder = dictionary.getCustomer().getMinCustomers();
-                maxBorder = (int) Math.round(dictionary.getCustomer().getMinCustomers() * 1.2);
+                minBorder = storeDict.getMinCustomers();
+                maxBorder = (int) Math.round(storeDict.getMinCustomers() * 1.2);
                 break;
             case medium:
             default:
-                int medCustomers = (dictionary.getCustomer().getMinCustomers() + dictionary.getCustomer().getMaxCustomers()) / 2;
+                int medCustomers = (storeDict.getMinCustomers() + storeDict.getMaxCustomers()) / 2;
                 minBorder = (int) Math.round(medCustomers / 1.1);
                 maxBorder = (int) Math.round(medCustomers * 1.1);
                 break;
@@ -152,7 +156,7 @@ public class CustomerService {
                         } else {
                             customer.setMode(CustomerMode.wait_checkout);
                             worldContext.getCheckoutQueue().add(customer);
-                            log.info(worldContext.getCurrentTick() + " тик: Покупатель " +customer.getId() + " встал в очередь на кассу (" + customer.prettyPrintBasket() + ")");
+                            log.debug(worldContext.getCurrentTick() + " тик: Покупатель " +customer.getId() + " встал в очередь на кассу (" + customer.prettyPrintBasket() + ")");
                         }
                     }
                 });

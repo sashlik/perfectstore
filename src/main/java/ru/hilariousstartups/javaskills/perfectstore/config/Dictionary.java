@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
-import ru.hilariousstartups.javaskills.perfectstore.model.CustomerDict;
 import ru.hilariousstartups.javaskills.perfectstore.model.EmployeeDict;
 import ru.hilariousstartups.javaskills.perfectstore.model.ProductDict;
 import ru.hilariousstartups.javaskills.perfectstore.model.StoreDict;
@@ -24,7 +23,6 @@ public class Dictionary {
     private List<String> lastNames;
     private Map<String, StoreDict> store;
     private Map<EmployeeExperience, EmployeeDict> employee;
-    private CustomerDict customer;
 
 
 }

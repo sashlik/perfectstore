@@ -8,14 +8,23 @@ dict:
       checkoutLines: 2
       workingCheckoutLines: 1
       rackCellPerVisibility: 3
+      minCustomers: 4
+      maxCustomers: 14
+      entranceCapacity: 6
     medium:
       checkoutLines: 8
       workingCheckoutLines: 5
       rackCellPerVisibility: 5
+      minCustomers: 12
+      maxCustomers: 29
+      entranceCapacity: 6
     large:
       checkoutLines: 16
       workingCheckoutLines: 11
       rackCellPerVisibility: 9
+      minCustomers: 20
+      maxCustomers: 100
+      entranceCapacity: 15
   employee:
     junior:
       experience: 10-30
@@ -26,10 +35,6 @@ dict:
     senior:
       experience: 70-100
       salary: 420
-  customer:
-    minCustomers: 20
-    maxCustomers: 150
-    entranceCapacity: 6
   stock:
     -  name: Картофель
        price: 52
