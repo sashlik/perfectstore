@@ -23,21 +23,19 @@ public class CustomerGenerator {
         this.worldContext = worldContext;
     }
 
-    public void generateCustomers() { // TODO implement
-        if (worldContext.getCustomers() == null) {
-            worldContext.setCustomers(new ArrayList<>());
+    public void generateCustomers(int count) {
 
-            List<CustomerDto> customers = worldContext.getCustomers();
+        List<CustomerDto> customers = worldContext.getCustomers();
 
-            IntStream.range(1, 3).forEach(i -> {
-                CustomerDto customer = new CustomerDto();
-                customer.setId(idCounter.incrementAndGet());
-                customer.setMode(CustomerMode.in_hall);
-                customer.setRackCellDtoIterator(new ArrayList<RackCellDto>(worldContext.getRackCells()).iterator()); // personal copy of rackCells with personal iterator
-                customers.add(customer);
-            });
+        IntStream.range(0, count).forEach(i -> {
+            CustomerDto customer = new CustomerDto();
+            customer.setId(idCounter.incrementAndGet());
+            customer.setMode(CustomerMode.in_hall);
+            customer.setRackCellDtoIterator(new ArrayList<RackCellDto>(worldContext.getRackCells()).iterator()); // personal copy of rackCells with personal iterator
+            customers.add(customer);
+            log.debug("В магазин зашло " + count + " покупателей");
+        });
 
 
-        }
     }
 }

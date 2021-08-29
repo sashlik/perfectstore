@@ -26,6 +26,10 @@ dict:
     senior:
       experience: 70-100
       salary: 420
+  customer:
+    minCustomers: 20
+    maxCustomers: 150
+    entranceCapacity: 6
   stock:
     -  name: Картофель
        price: 52

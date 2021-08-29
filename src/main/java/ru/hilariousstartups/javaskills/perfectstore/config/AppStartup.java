@@ -31,7 +31,6 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
     private EmployeeService employeeService;
     private EmployeeGenerator employeeGenerator;
     private StockGenerator stockGenerator;
-    private CustomerGenerator customerGenerator;
     private ProductService productService;
     private Dictionary dictionary;
 
@@ -41,7 +40,6 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
                       EmployeeService employeeService,
                       EmployeeGenerator employeeGenerator,
                       StockGenerator stockGenerator,
-                      CustomerGenerator customerGenerator,
                       ProductService productService,
                       Dictionary dictionary) {
         this.worldContext = worldContext;
@@ -49,14 +47,13 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
         this.employeeService = employeeService;
         this.employeeGenerator = employeeGenerator;
         this.stockGenerator = stockGenerator;
-        this.customerGenerator = customerGenerator;
         this.productService = productService;
         this.dictionary = dictionary;
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        log.info("Создаем мир..");
+        log.debug("Создаем мир..");
         worldContext.setCurrentTick(new AtomicInteger(0));
         worldContext.setTickCount(externalConfig.getGameDays() * 24 * 60); // tick = 1 minute
         worldContext.setIncome(0d);
@@ -64,7 +61,6 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
         worldContext.setStockCosts(0D);
         initCheckoutLines();
         initRackCells();
-        initCustomers();
 
         if (externalConfig.getPregenerate()) {
             initEmployees();
@@ -75,7 +71,7 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
             initEmptyStock();
         }
 
-        log.info("Мир создан!");
+        log.debug("Мир создан!");
     }
 
     private void initCheckoutLines() {
@@ -162,9 +158,7 @@ public class AppStartup implements ApplicationListener<ApplicationReadyEvent> {
         });
     }
 
-    private void initCustomers() {
-        customerGenerator.generateCustomers();
-    }
+
 
 
 }

@@ -55,7 +55,7 @@ public class EmployeeService {
             fireEmployeeCommands.forEach(fec -> {
                 EmployeeDto fireCandidate = worldContext.findEmployee(fec.getEmployeeId());
                 if (fireCandidate != null) {
-                    log.info(fireCandidate.fullName() + " будет уволена как только отдохнет положенное время");
+                    log.debug(fireCandidate.fullName() + " будет уволена как только отдохнет положенное время");
                     fireCandidate.setNeedToFire(true);
                     markToStopWork(fireCandidate);
                 }
@@ -110,7 +110,7 @@ public class EmployeeService {
         List<EmployeeDto> toFire = worldContext.getEmployees().stream()
                 .filter(employee -> employee.isNeedToFire() && employee.getRestTime() >= REST_TIME).collect(Collectors.toList());
         worldContext.getEmployees().removeAll(toFire);
-        toFire.forEach(employee ->  log.info(worldContext.getCurrentTick().get() + " тик:" + employee.fullName() + " уволена."));
+        toFire.forEach(employee ->  log.debug(worldContext.getCurrentTick().get() + " тик:" + employee.fullName() + " уволена."));
     }
 
     public void increaseWorkTime(EmployeeDto employee) {
@@ -133,7 +133,7 @@ public class EmployeeService {
         }
         CheckoutLineDto checkoutLine = employee.getCheckoutLine();
         if (checkoutLine != null) {
-            log.info(worldContext.getCurrentTick() + " тик: " + employee.fullName()
+            log.debug(worldContext.getCurrentTick() + " тик: " + employee.fullName()
                     + " отработала смену и освободила кассу " + employee.getCheckoutLine().getLineNumber());
             checkoutLine.setEmployeeDto(null);
 
@@ -156,7 +156,7 @@ public class EmployeeService {
             employee.setRestTime(0);
             employee.setCheckoutLine(checkoutLine);
             checkoutLine.setEmployeeDto(employee);
-            log.info(employee.fullName()
+            log.debug(employee.fullName()
                     + " заступила на смену на кассу " + checkoutLine.getLineNumber());
         }
     }

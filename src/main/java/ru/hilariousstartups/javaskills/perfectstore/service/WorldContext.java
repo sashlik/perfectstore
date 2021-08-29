@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 import ru.hilariousstartups.javaskills.perfectstore.model.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -26,7 +27,8 @@ public class WorldContext {
     private List<EmployeeDto> employees; // Сотрудники
     private List<ProductDto> stock; // Склад товаров
     private List<RackCellDto> rackCells; // Продуктовые полки
-    private List<CustomerDto> customers; // покупатели
+    private List<CustomerDto> customers = new ArrayList<>(); // покупатели
+    private Integer desiredCustomersCount; // количество покупателей, к которому движется текущее количество. Как только достигается, оно меняется, тем самым обеспечивая "наплывы" покупателей волнами
 
     private Queue<CustomerDto> checkoutQueue = new LinkedList<>(); // Очередь на кассы
 

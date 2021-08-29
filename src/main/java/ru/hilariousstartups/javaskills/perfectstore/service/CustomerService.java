@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.hilariousstartups.javaskills.perfectstore.config.Dictionary;
 import ru.hilariousstartups.javaskills.perfectstore.model.*;
 import ru.hilariousstartups.javaskills.perfectstore.utils.MoneyUtils;
 
@@ -19,10 +20,15 @@ import java.util.stream.IntStream;
 public class CustomerService {
 
     private WorldContext worldContext;
+    private Dictionary dictionary;
+    private CustomerGenerator customerGenerator;
 
-
-    public CustomerService(WorldContext worldContext) {
+    public CustomerService(WorldContext worldContext,
+                           Dictionary dictionary,
+                           CustomerGenerator customerGenerator) {
         this.worldContext = worldContext;
+        this.dictionary = dictionary;
+        this.customerGenerator = customerGenerator;
     }
 
     public void tick() {
@@ -30,11 +36,63 @@ public class CustomerService {
         processHall(leavingCustomers);
        processWaitingQueue();
        processCheckout(leavingCustomers);
-
        worldContext.getCustomers().removeAll(leavingCustomers);
+
+       newCustomersEnter();
     }
 
 
+    private void newCustomersEnter() {
+        Integer desiredCount = worldContext.getDesiredCustomersCount();
+        int currentCount = worldContext.getCustomers().size();
+        if (desiredCount == null || currentCount <= desiredCount) {
+            desiredCount = generateDesired();
+            worldContext.setDesiredCustomersCount(desiredCount);
+        }
+
+        if (currentCount < desiredCount) {
+            int newCustomers = Math.min(desiredCount - currentCount, dictionary.getCustomer().getEntranceCapacity());
+            customerGenerator.generateCustomers(newCustomers);
+        }
+
+
+    }
+
+    private Integer generateDesired() {
+
+        int minBorder, maxBorder;
+        TrafficMode traffic = traffic(worldContext.getCurrentTick().get());
+        switch (traffic) {
+            case high:
+                minBorder = (int) Math.round(dictionary.getCustomer().getMaxCustomers() / 1.2);
+                maxBorder = dictionary.getCustomer().getMaxCustomers();
+                break;
+            case low:
+                minBorder = dictionary.getCustomer().getMinCustomers();
+                maxBorder = (int) Math.round(dictionary.getCustomer().getMinCustomers() * 1.2);
+                break;
+            case medium:
+            default:
+                int medCustomers = (dictionary.getCustomer().getMinCustomers() + dictionary.getCustomer().getMaxCustomers()) / 2;
+                minBorder = (int) Math.round(medCustomers / 1.1);
+                maxBorder = (int) Math.round(medCustomers * 1.1);
+                break;
+        }
+        return ThreadLocalRandom.current().nextInt(minBorder, maxBorder + 1);
+    }
+
+    public  TrafficMode traffic(Integer currentTick) { // todo make private
+        int currentHour = currentTick / 60 % 24;
+        if (currentHour >= 9 && currentHour <=18) {
+            return TrafficMode.medium;
+        }
+        else if (currentHour >= 22 || currentHour <= 7) {
+            return TrafficMode.low;
+        }
+        else {
+            return TrafficMode.high;
+        }
+    }
 
     private void processHall(List<CustomerDto> leavingCustomers) {
         worldContext.getCustomers().stream()
@@ -51,7 +109,7 @@ public class CustomerService {
                     waitingCustomer.setCheckoutLine(checkoutLine);
                     waitingCustomer.setMode(CustomerMode.at_checkout);
                     calcCheckoutTime(waitingCustomer);
-                    log.info(worldContext.getCurrentTick().get() + " тик: Покупатель " +waitingCustomer.getId() + " расплачивается на кассе " + checkoutLine.getLineNumber());
+                    log.debug(worldContext.getCurrentTick().get() + " тик: Покупатель " +waitingCustomer.getId() + " расплачивается на кассе " + checkoutLine.getLineNumber());
                 }
 
             }
@@ -86,7 +144,7 @@ public class CustomerService {
                         } else {
                             customer.setMode(CustomerMode.wait_checkout);
                             worldContext.getCheckoutQueue().add(customer);
-                            log.info(worldContext.getCurrentTick() + " тик: Покупатель " +customer.getId() + " встал в очередь на кассу (" + customer.prettyPrintBasket() + ")");
+                            log.debug(worldContext.getCurrentTick() + " тик: Покупатель " +customer.getId() + " встал в очередь на кассу (" + customer.prettyPrintBasket() + ")");
                         }
                     }
                 });
@@ -97,10 +155,10 @@ public class CustomerService {
             customer.getCheckoutLine().setCustomer(null);
             Double income = MoneyUtils.round(calcIncome(customer));
             worldContext.setIncome(worldContext.getIncome() + income);
-            log.info(worldContext.getCurrentTick() + " тик: Покупатель " + customer.getId() + " покинул магазин (прибыль " + income + "руб.)");
+            log.debug(worldContext.getCurrentTick() + " тик: Покупатель " + customer.getId() + " покинул магазин (прибыль " + income + "руб.)");
         }
         else {
-            log.warn(worldContext.getCurrentTick() + " тик: Покупатель " + customer.getId() + " покинул магазин без покупок");
+            log.debug(worldContext.getCurrentTick() + " тик: Покупатель " + customer.getId() + " покинул магазин без покупок");
         }
 
         leavingCustomers.add(customer);
