@@ -175,7 +175,7 @@ public class CustomerService {
     private Double calcIncome(CustomerDto customer) {
         Double income = 0d;
         for (ProductInBasketDto productInBasket : customer.getBasket()) {
-            income += (productInBasket.getPrice() - productInBasket.getProduct().getStockPrice()) * productInBasket.getProductCount();
+            income += productInBasket.getPrice() * productInBasket.getProductCount();
         }
         return income;
     }
