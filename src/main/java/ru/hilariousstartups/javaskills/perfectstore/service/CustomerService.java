@@ -81,7 +81,7 @@ public class CustomerService {
         return ThreadLocalRandom.current().nextInt(minBorder, maxBorder + 1);
     }
 
-    public  TrafficMode traffic(Integer currentTick) { // todo make private
+    private   TrafficMode traffic(Integer currentTick) {
         int currentHour = currentTick / 60 % 24;
         if (currentHour >= 9 && currentHour <=18) {
             return TrafficMode.medium;

@@ -40,7 +40,7 @@ class PerfectStoreApplicationTests {
         CurrentWorldResponse world;
         do {
              world = endpoint.tick(new CurrentTickRequest());
-             echoTraffic(world.getCurrentTick());
+            // echoTraffic(world.getCurrentTick());
             System.out.print(world.getCustomers().size() + " ");
             /*if (world.getCurrentTick() == 10) {
                 System.out.println("Снимаем с кассы!");
@@ -78,13 +78,13 @@ class PerfectStoreApplicationTests {
 
     }
 
-    private void echoTraffic(Integer currentTick) {
+    /*private void echoTraffic(Integer currentTick) {
         TrafficMode curTraffic = customerService.traffic(currentTick);
         if (traffic != curTraffic) {
             traffic = curTraffic;
             System.out.println("\n"+traffic);
         }
 
-    }
+    }*/
 
 }
