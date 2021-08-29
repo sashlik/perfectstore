@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.hilariousstartups.javaskills.perfectstore.config.Dictionary;
+import ru.hilariousstartups.javaskills.perfectstore.config.ExternalConfig;
 import ru.hilariousstartups.javaskills.perfectstore.model.*;
 import ru.hilariousstartups.javaskills.perfectstore.utils.MoneyUtils;
 
@@ -22,13 +23,16 @@ public class CustomerService {
     private WorldContext worldContext;
     private Dictionary dictionary;
     private CustomerGenerator customerGenerator;
+    private ExternalConfig externalConfig;
 
     public CustomerService(WorldContext worldContext,
                            Dictionary dictionary,
-                           CustomerGenerator customerGenerator) {
+                           CustomerGenerator customerGenerator,
+                           ExternalConfig externalConfig) {
         this.worldContext = worldContext;
         this.dictionary = dictionary;
         this.customerGenerator = customerGenerator;
+        this.externalConfig = externalConfig;
     }
 
     public void tick() {
@@ -148,7 +152,7 @@ public class CustomerService {
                         } else {
                             customer.setMode(CustomerMode.wait_checkout);
                             worldContext.getCheckoutQueue().add(customer);
-                            log.debug(worldContext.getCurrentTick() + " тик: Покупатель " +customer.getId() + " встал в очередь на кассу (" + customer.prettyPrintBasket() + ")");
+                            log.info(worldContext.getCurrentTick() + " тик: Покупатель " +customer.getId() + " встал в очередь на кассу (" + customer.prettyPrintBasket() + ")");
                         }
                     }
                 });
@@ -181,11 +185,10 @@ public class CustomerService {
         RackCellDto currentRackCell = customer.getCurrentRackCell();
         ProductDto product = currentRackCell.getProduct(); // rack is not empty
         if (product != null) {
-            boolean takeProduct = ThreadLocalRandom.current().nextBoolean(); // TODO implement
+            Integer takeProduct = takeProduct(product.getStockPrice(), product.getSellPrice(), externalConfig.getHypeLevel(), currentRackCell.getVisibility());
 
-            if (takeProduct) {
-                int count = ThreadLocalRandom.current().nextInt(1, 4);
-                count = Math.min(count, product.getRackCellCount());
+            if (takeProduct > 0) {
+                int count = Math.min(takeProduct, product.getRackCellCount());
 
                 if (count > 0) {
                     product.setRackCellCount(product.getRackCellCount() - count); // take from rack
@@ -198,5 +201,25 @@ public class CustomerService {
             }
         }
 
+    }
+
+    private Integer takeProduct(Double stockPrice, Double sellPrice, Integer hypeLevel, Integer rackVisibility) {
+        double x = sellPrice / stockPrice;
+        double k = -4;
+        double b = 5.7;
+        double priceProbability = boundaries(k * x + b, 0d, 0.95);
+        double probablity = priceProbability * levelToRate(hypeLevel) * levelToRate(rackVisibility);
+        if (probablity > 1) {
+            return 2;
+        }
+        return ThreadLocalRandom.current().nextDouble() < probablity ? 1 : 0;
+    }
+
+    private Double boundaries(Double input, Double min, Double max) {
+        return Math.min(max, Math.max(min, input));
+    }
+
+    private Double levelToRate(Integer level) {
+        return 0.55 + boundaries(Double.valueOf(level), 1d, 5d) * 0.15;
     }
 }

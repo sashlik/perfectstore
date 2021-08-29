@@ -34,14 +34,14 @@ class PerfectStoreApplicationTests {
 
     private int cnt = 0;
 
-  //  @Test
+    //@Test
     void contextLoads() {
 
         CurrentWorldResponse world;
         do {
              world = endpoint.tick(new CurrentTickRequest());
             // echoTraffic(world.getCurrentTick());
-            System.out.print(world.getCustomers().size() + " ");
+          //  System.out.print(world.getCustomers().size() + " ");
             /*if (world.getCurrentTick() == 10) {
                 System.out.println("Снимаем с кассы!");
                 SetOffCheckoutLineCommand setOffCheckoutLineCommand = new SetOffCheckoutLineCommand();
