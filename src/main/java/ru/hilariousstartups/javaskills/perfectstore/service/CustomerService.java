@@ -47,9 +47,6 @@ public class CustomerService {
 
 
     private void newCustomersEnter() {
-        if (worldContext.getCurrentTick().get() % 120 == 0) {
-            System.out.println(traffic(worldContext.getCurrentTick().get()) + " " + worldContext.getCheckoutQueue().size());
-        }
         Integer desiredCount = worldContext.getDesiredCustomersCount();
         int currentCount = worldContext.getCustomers().size();
         if (desiredCount == null || currentCount <= desiredCount) {

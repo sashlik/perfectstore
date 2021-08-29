@@ -22,7 +22,7 @@ public class CurrentTickRequest {
     @Schema(description = "Команды для снятия сотрудника с кассы", required = false)
     private List<SetOffCheckoutLineCommand> setOffCheckoutLineCommands;
 
-    @Schema(description = "Команды на закупку товара у поставщика на склад.", required = false)
+    @Schema(description = "Команды на закупку товара у поставщика на склад. При покупке товара на склад вы оплачиваете услуги транспортной компании в размере 5000р. Поэтому старайтесь заказывать реже и по многу", required = false)
     private List<BuyStockCommand> buyStockCommands;
 
     @Schema(description = "Команды на снятие продукта с полки", required = false)

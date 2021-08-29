@@ -36,6 +36,9 @@ public class ProductService {
                     log.error("Некорректное количество товара " + command.getQuantity());
                 }
             });
+            if (!buyStockCommands.isEmpty()) {
+                worldContext.setStockCosts(worldContext.getStockCosts() + 5000);
+            }
         }
     }
 

@@ -37,7 +37,7 @@ public class DomainToViewMapper {
 
         response.setCheckoutLines(worldContext.getCheckoutLines().stream().map(checkoutLineDto -> {
             CheckoutLine checkoutLine = new CheckoutLine();
-            checkoutLine.setLineNumber(checkoutLineDto.getLineNumber());
+            checkoutLine.setId(checkoutLineDto.getLineNumber());
             checkoutLine.setEmployeeId(checkoutLineDto.getEmployeeDto() != null ? checkoutLineDto.getEmployeeDto().getId() : null);
             checkoutLine.setCustomerId(checkoutLineDto.getCustomer() != null ?checkoutLineDto.getCustomer().getId() : null);
             return checkoutLine;

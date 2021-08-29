@@ -17,10 +17,10 @@ public class ExternalConfig {
 
     @Autowired
     public ExternalConfig(@Value("${gamedays:7}") Integer gameDays,
-                          @Value("${storesize:large}")  String storeSize,
+                          @Value("${storesize:small}")  String storeSize,
                           @Value("${pregenerate:false}") Boolean pregenerate,
                           @Value("${hype:3}") Integer hypeLevel,
-                          @Value("${RESULT_LOCATION:/Users/Guest/Public/}") String resultPath) {
+                          @Value("${RESULT_LOCATION:/opt/results/output.txt}") String resultPath) {
         this.gameDays = gameDays;
         this.pregenerate = pregenerate;
         this.storeSize = storeSize;
@@ -28,3 +28,4 @@ public class ExternalConfig {
         this.resultPath = resultPath;
     }
 }
+

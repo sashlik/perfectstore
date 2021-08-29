@@ -1,11 +1,19 @@
 package ru.hilariousstartups.javaskills.perfectstore.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.hilariousstartups.javaskills.perfectstore.config.ExternalConfig;
+import ru.hilariousstartups.javaskills.perfectstore.model.ResultDto;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.CurrentTickRequest;
 import ru.hilariousstartups.javaskills.perfectstore.model.vo.CurrentWorldResponse;
 import ru.hilariousstartups.javaskills.perfectstore.utils.MoneyUtils;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 @Slf4j
@@ -17,18 +25,21 @@ public class PerfectStoreService {
     private EmployeeService employeeService;
     private ProductService productService;
     private CustomerService customerService;
+    private ExternalConfig externalConfig;
 
     @Autowired
     public PerfectStoreService(WorldContext worldContext,
                                DomainToViewMapper domainToViewMapper,
                                EmployeeService employeeService,
                                ProductService productService,
-                               CustomerService customerService) {
+                               CustomerService customerService,
+                               ExternalConfig externalConfig) {
         this.worldContext = worldContext;
         this.domainToViewMapper = domainToViewMapper;
         this.employeeService = employeeService;
         this.productService = productService;
         this.customerService = customerService;
+        this.externalConfig = externalConfig;
     }
 
     public CurrentWorldResponse tick(CurrentTickRequest request) {
@@ -58,7 +69,16 @@ public class PerfectStoreService {
             Double salaryCosts = MoneyUtils.round(worldContext.getSalaryCosts());
 
             double total = MoneyUtils.round(income - stockCosts - salaryCosts);
-            log.info("\nGame over! \nВыручка: " + income + "руб.\nРасходы на закупку товаров: " + stockCosts + " руб.\nРасходы на персонал: " + salaryCosts + "руб. \n\nИтого магазин заработал: " + total + "руб.");
+            String logText = "\nGame over! \nВыручка: " + income + "руб.\nРасходы на закупку товаров: " + stockCosts + " руб.\nРасходы на персонал: " + salaryCosts + "руб. \n\nИтого магазин заработал: " + total + "руб.";
+            ResultDto result = new ResultDto("OK", total, logText);
+            try {
+                String resultStr = new ObjectMapper().writeValueAsString(result);
+                Path path = Paths.get(externalConfig.getResultPath());
+                Files.write(path, resultStr.getBytes());
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+            log.debug(logText);
         }
 
 
