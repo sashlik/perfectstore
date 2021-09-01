@@ -33,7 +33,7 @@ public class ProductService {
                     }
                 }
                 else {
-                    log.error("Некорректное количество товара " + command.getQuantity());
+                    log.debug("Некорректное количество товара " + command.getQuantity());
                 }
             });
             if (!buyStockCommands.isEmpty()) {
@@ -48,7 +48,7 @@ public class ProductService {
                 ProductDto product = worldContext.findProduct(command.getProductId());
                 if (product != null && command.getSellPrice() != null) {
                     if (command.getSellPrice() <= 0) {
-                        log.error("Цена должна быть больше нуля");
+                        log.debug("Цена должна быть больше нуля");
                     }
                     else {
                         product.setSellPrice(command.getSellPrice());
@@ -80,13 +80,13 @@ public class ProductService {
 
                 if (product != null && rackCell != null) {
                     if (product.getRackCell() != null && product.getRackCell() != rackCell) {
-                        log.error("Продукт уже выставлен на другой полке");
+                        log.debug("Продукт уже выставлен на другой полке");
                     }
                     else if (rackCell.getProduct() != null && rackCell.getProduct() != product) {
-                        log.error("На полке уже выставлен другой товар");
+                        log.debug("На полке уже выставлен другой товар");
                     }
                     else if (product.getSellPrice() == null && command.getSellPrice() == null) {
-                        log.error("Не указана цена на товар");
+                        log.debug("Не указана цена на товар");
                     }
                     else {
                         Integer onRack = Optional.ofNullable(product.getRackCellCount()).orElse(0);
@@ -107,7 +107,7 @@ public class ProductService {
 
                 }
                 else {
-                    log.error("Не найден товар или полка");
+                    log.debug("Не найден товар или полка");
                 }
             });
         }

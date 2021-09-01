@@ -143,13 +143,13 @@ public class EmployeeService {
 
     public void startWork(EmployeeDto employee, CheckoutLineDto checkoutLine) {
         if (employee.getCheckoutLine() != null) {
-            log.error(employee.fullName() + " уже работает за другой кассой");
+            log.debug(employee.fullName() + " уже работает за другой кассой");
         }
         else if (checkoutLine.getEmployeeDto() != null) {
-            log.error("За кассой " + checkoutLine.getLineNumber() + " уже работает " + checkoutLine.getEmployeeDto().fullName());
+            log.debug("За кассой " + checkoutLine.getLineNumber() + " уже работает " + checkoutLine.getEmployeeDto().fullName());
         }
         else if (employee.getRestTime() < REST_TIME) {
-            log.error(employee.fullName() + " еще не отдохнула");
+            log.debug(employee.fullName() + " еще не отдохнула");
         }
         else {
             employee.setWorkTime(1);
