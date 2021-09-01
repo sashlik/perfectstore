@@ -31,6 +31,7 @@ public class WorldContext {
     private Integer desiredCustomersCount; // количество покупателей, к которому движется текущее количество. Как только достигается, оно меняется, тем самым обеспечивая "наплывы" покупателей волнами
 
     private Queue<CustomerDto> checkoutQueue = new LinkedList<>(); // Очередь на кассы
+    private boolean playerConnected;
 
 
 

@@ -45,7 +45,7 @@ public class PerfectStoreService {
     }
 
     public CurrentWorldResponse tick(CurrentTickRequest request) {
-
+        worldContext.setPlayerConnected(true);
         if (!worldContext.isGameOver()) {
 
             employeeService.handleFireEmployeeCommands(request.getFireEmployeeCommands());
@@ -72,14 +72,7 @@ public class PerfectStoreService {
 
             double total = MoneyUtils.round(income - stockCosts - salaryCosts);
             String logText = "\nGame over! \nВыручка: " + income + "руб.\nРасходы на закупку товаров: " + stockCosts + " руб.\nРасходы на персонал: " + salaryCosts + "руб. \n\nИтого магазин заработал: " + total + "руб.";
-            ResultDto result = new ResultDto("OK", total, logText);
-            try {
-                String resultStr = new ObjectMapper().writeValueAsString(result);
-                Path path = Paths.get(externalConfig.getResultPath());
-                Files.write(path, resultStr.getBytes());
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
+            logResult("OK", total, logText, null);
             log.debug(logText);
         }
 
@@ -92,7 +85,20 @@ public class PerfectStoreService {
         return currentWorldResponse();
     }
 
+    public void logResult(String status, double total, String logs, String errors) {
+        ResultDto result = new ResultDto(status, total, logs, errors);
+        try {
+            String resultStr = new ObjectMapper().writeValueAsString(result);
+            Path path = Paths.get(externalConfig.getResultPath());
+            Files.write(path, resultStr.getBytes());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+    }
+
     public CurrentWorldResponse currentWorldResponse() {
+        worldContext.setPlayerConnected(true);
         return domainToViewMapper.currentWorldResponse();
     }
 

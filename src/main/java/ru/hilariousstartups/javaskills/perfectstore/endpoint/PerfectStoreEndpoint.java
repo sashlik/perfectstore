@@ -32,15 +32,29 @@ public class PerfectStoreEndpoint {
     @Operation(summary = "Получить текущее состояние мира. Игра начинается с первичной загрузки данных о мире.")
     @GetMapping("/loadWorld")
     public CurrentWorldResponse loadWorld() {
-        return perfectStoreService.currentWorldResponse();
+        try {
+            return perfectStoreService.currentWorldResponse();
+        } catch (Exception e) {
+            perfectStoreService.logResult("ERR", 0d, null, e.getMessage());
+            SpringApplication.exit(applicationContext, () -> 0);
+            System.exit(0);
+            return null;
+        }
     }
 
     @Operation(summary = "Прожить еще одну минуту. На вход передаются управленческие решения менеджмента магазина (если нужны), проживается еще одна минута и возвращается состояние мира после прожитой минуты")
     @PostMapping("/tick")
     public CurrentWorldResponse tick(@RequestBody CurrentTickRequest request) {
-        CurrentWorldResponse tick = perfectStoreService.tick(request);
-        termiateIfGameOver(tick);
-        return tick;
+        try {
+            CurrentWorldResponse tick = perfectStoreService.tick(request);
+            termiateIfGameOver(tick);
+            return tick;
+        } catch (Exception e) {
+            perfectStoreService.logResult("ERR", 0d, null, e.getMessage());
+            SpringApplication.exit(applicationContext, () -> 0);
+            System.exit(0);
+            return null;
+        }
     }
 
     private void termiateIfGameOver(CurrentWorldResponse tick) {
