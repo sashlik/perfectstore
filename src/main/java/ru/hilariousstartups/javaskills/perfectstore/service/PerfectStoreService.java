@@ -86,7 +86,11 @@ public class PerfectStoreService {
     }
 
     public void logResult(String status, double total, String logs, String errors) {
-        ResultDto result = new ResultDto(status, total, logs, errors);
+        String[] errorsArr = null;
+        if (errors != null) {
+            errorsArr = new String[] {errors};
+        }
+        ResultDto result = new ResultDto(status, total, logs, errorsArr);
         try {
             String resultStr = new ObjectMapper().writeValueAsString(result);
             Path path = Paths.get(externalConfig.getResultPath());

@@ -12,6 +12,6 @@ public class ResultDto {
     private String status;
     private Double score;
     private String logs;
-    private String errors;
+    private String[] errors;
 
 }
