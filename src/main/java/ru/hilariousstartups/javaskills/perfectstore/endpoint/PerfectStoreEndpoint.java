@@ -1,6 +1,7 @@
 package ru.hilariousstartups.javaskills.perfectstore.endpoint;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@Slf4j
 public class PerfectStoreEndpoint {
 
     private PerfectStoreService perfectStoreService;
@@ -35,6 +37,7 @@ public class PerfectStoreEndpoint {
         try {
             return perfectStoreService.currentWorldResponse();
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             perfectStoreService.logResult("ERR", 0d, null, e.getMessage());
             SpringApplication.exit(applicationContext, () -> 0);
             System.exit(0);
@@ -50,7 +53,8 @@ public class PerfectStoreEndpoint {
             termiateIfGameOver(tick);
             return tick;
         } catch (Exception e) {
-            perfectStoreService.logResult("ERR", 0d, null, e.getMessage());
+            log.error(e.getMessage(), e);
+            perfectStoreService.logResult("ERR", 0d, null, e.getClass().toString() + " " + e.getMessage());
             SpringApplication.exit(applicationContext, () -> 0);
             System.exit(0);
             return null;
