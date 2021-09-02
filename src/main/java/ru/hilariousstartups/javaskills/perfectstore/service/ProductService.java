@@ -63,10 +63,12 @@ public class ProductService {
             putOffRackCellCommands.forEach(command -> {
                 RackCellDto rackCell = worldContext.findRackCell(command.getRackCellId());
                 if (rackCell != null && rackCell.getProduct() != null) {
+                    Integer rackCellCount = rackCell.getProduct().getRackCellCount();
                     ProductDto product = rackCell.getProduct();
                     product.setRackCellCount(0);
                     product.setRackCell(null);
                     rackCell.setProduct(null);
+                    rackCell.getProduct().setInStock(rackCell.getProduct().getInStock() + rackCellCount);
                 }
             });
         }
